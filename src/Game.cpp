@@ -4,11 +4,12 @@
 
 ///////////////////////////////////////////////////////////////////
 Game::Game() :
-	m_window{ sf::VideoMode{ 1600u, 1000u, 32u }, "Basic Game" },
+	m_window{ sf::VideoMode{ 1600u, 1600u, 32u }, "Basic Game" },
 	m_exitGame{ false },
-	m_flowField{ 20, 20 },
+	m_flowField{ 50, 50 },
 	m_flowFieldRenderer{ &m_flowField }
 {
+	m_flowField.setGoal(30, 30);
 }
 
 ///////////////////////////////////////////////////////////////////

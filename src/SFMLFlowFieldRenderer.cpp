@@ -12,6 +12,7 @@ SFMLFlowFieldRenderer::SFMLFlowFieldRenderer(FlowField const * t_flowField, sf::
 		m_costText.setFont(m_costFont);
 
 	m_costText.setFillColor(sf::Color::Black);
+	m_costText.setCharacterSize(16u);
 }
 
 void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
