@@ -7,6 +7,12 @@
 
 namespace ff
 {
+	struct Node2i
+	{
+		int x;
+		int y;
+	};
+
 	class FlowField
 	{
 	public:
@@ -15,21 +21,21 @@ namespace ff
 
 		void setGoal(int t_x, int t_y);
 
-		std::vector<std::vector<int8_t>> const & getCostField() const;
+		std::vector<std::vector<int8_t>> const& getCostField() const;
+		std::vector<std::vector<float>> const & getIntegrationField() const;
+		std::vector<std::vector<Node2i>> const & getFlowField() const;
 
 	private:
 
-		struct Node2D
-		{
-			int x;
-			int y;
-		};
-
-		void setNeighboursCosts(int t_x, int t_y);
+		void setNeighboursCosts(Node2i t_tile, Node2i t_goal);
+		void createFlowField();
+		Node2i getBestNeighbour(Node2i t_tile);
 
 		std::vector<std::vector<int8_t>> m_costField;
+		std::vector<std::vector<float>> m_integrationField;
+		std::vector<std::vector<Node2i>> m_flowField;
 
-		std::queue<Node2D> m_costSetupQueue;
+		std::queue<Node2i> m_costSetupQueue;
 
 	};
 }
