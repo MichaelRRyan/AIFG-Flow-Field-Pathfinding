@@ -4,10 +4,11 @@
 
 ///////////////////////////////////////////////////////////////////
 Game::Game() :
-	m_window{ sf::VideoMode{ 800u, 600u, 32u }, "Basic Game" },
-	m_exitGame{ false }
+	m_window{ sf::VideoMode{ 1600u, 1000u, 32u }, "Basic Game" },
+	m_exitGame{ false },
+	m_flowField{ 20, 20 },
+	m_flowFieldRenderer{ &m_flowField }
 {
-	setupShapes();
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -64,18 +65,9 @@ void Game::render()
 {
 	m_window.clear();
 
-	m_window.draw(m_circle);
+	m_window.draw(m_flowFieldRenderer);
 
 	m_window.display();
-}
-
-///////////////////////////////////////////////////////////////////
-void Game::setupShapes()
-{
-	m_circle.setFillColor(sf::Color::Red);
-	m_circle.setRadius(30.0f);
-	m_circle.setOrigin(m_circle.getRadius(), m_circle.getRadius());
-	m_circle.setPosition(400.0f, 300.0f);
 }
 
 ///////////////////////////////////////////////////////////////////
