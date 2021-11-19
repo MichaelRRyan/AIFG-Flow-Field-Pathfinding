@@ -85,6 +85,27 @@ void FlowField::generate()
 	createFlowField();
 }
 
+std::list<Vector2u> const * ff::FlowField::getPathToGoal(Vector2u const& t_startPos)
+{
+	// Returns nullptr if the new wall position is outside the bounds of the cost field.
+	if (t_startPos.x >= m_cells.size() && t_startPos.y >= m_cells.at(0).size())
+		return nullptr;
+	
+	// If the start is a wall or the goal, returns nullptr.
+	if (getCell(t_startPos).cost == WALL_COST && t_startPos == m_goal)
+		return nullptr;
+
+	// Creates a new empty path.
+	std::list<Vector2u> * path = new std::list<Vector2u>();
+
+	path->push_back(getCell(t_startPos).bestNeighbour);
+
+	while (path->back() != m_goal)
+		path->push_back(getCell(path->back()).bestNeighbour);
+
+	return path;
+}
+
 Cell const& ff::FlowField::getCell(unsigned t_x, unsigned t_y) const
 {
 	return m_cells.at(t_x).at(t_y);
@@ -152,8 +173,16 @@ void FlowField::createFlowField()
 	{
 		for (unsigned y = 0; y < m_cells.at(x).size(); ++y)
 		{
-			Vector2u node = getBestNeighbour({ x, y });
-			m_cells.at(x).at(y).bestNeighbour = { node.x, node.y };
+			// If the cell is a wall, set it's best neighbour to itself.
+			if (m_cells.at(x).at(y).cost == WALL_COST)
+				m_cells.at(x).at(y).bestNeighbour = { x, y };
+
+			// If the cell is not a wall, find the best neighbour.
+			else 
+			{
+				Vector2u node = getBestNeighbour({ x, y });
+				m_cells.at(x).at(y).bestNeighbour = { node.x, node.y };
+			}
 		}
 	}
 }

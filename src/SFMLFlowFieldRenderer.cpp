@@ -43,7 +43,7 @@ void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 	}
 }
 
-void SFMLFlowFieldRenderer::cacheRender()
+void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
 {
 	if (m_flowField == nullptr) return;
 
@@ -94,6 +94,19 @@ void SFMLFlowFieldRenderer::cacheRender()
 
 			// Adds the end of the line as the best neighbours position.
 			lines.append({ neighbourPosition + m_cellSize / 2.0f, sf::Color::White });
+		}
+	}
+
+	if (t_path)
+	{
+		for (auto it = t_path->begin(); it != t_path->end(); ++it)
+		{
+			sf::Vector2f position{ static_cast<float>(it->x) * m_cellSize.x,
+								   static_cast<float>(it->y) * m_cellSize.y };
+
+			rectangle.setPosition(position);
+			rectangle.setFillColor(sf::Color{ 255u, 0u, 0u });
+			m_renderTexture.draw(rectangle);
 		}
 	}
 

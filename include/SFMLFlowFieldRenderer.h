@@ -15,7 +15,7 @@ namespace ff
 
 		void setFlowField(FlowField const * t_flowField);
 
-		void cacheRender();
+		void cacheRender(std::list<Vector2u> const * t_path = nullptr);
 
 	private:
 

@@ -79,6 +79,11 @@ void Game::processEvents()
 
 				m_flowFieldRenderer.cacheRender();
 			}
+			else if (sf::Mouse::Button::Middle == nextEvent.mouseButton.button)
+			{
+				m_flowFieldRenderer.cacheRender(
+					m_flowField.getPathToGoal(mouseCell));
+			}
 		}
 	}
 }

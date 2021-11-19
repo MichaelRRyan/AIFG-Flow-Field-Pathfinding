@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <list>
 #include <iostream>
 
 namespace ff
@@ -10,10 +11,22 @@ namespace ff
 	unsigned const WALL_COST{ std::numeric_limits<unsigned>::max() };
 	float const WALL_INTEGRATION_COST{ std::numeric_limits<float>::max() };
 
-	struct Vector2u
+	class Vector2u
 	{
+	public:
+
 		unsigned x;
 		unsigned y;
+
+		bool operator==(Vector2u const & t_right) const
+		{
+			return x == t_right.x && y == t_right.y;
+		}
+
+		bool operator!=(Vector2u const& t_right) const
+		{
+			return x != t_right.x || y != t_right.y;
+		}
 	};
 
 	struct Cell
@@ -39,6 +52,8 @@ namespace ff
 		void clearCell(Vector2u const& t_cell, bool t_generate = true);
 
 		void generate();
+
+		std::list<Vector2u> const * getPathToGoal(Vector2u const& t_startPos);
 
 		Cell const & getCell(unsigned t_x, unsigned t_y) const;
 		Cell const & getCell(Vector2u const& t_cell) const;
