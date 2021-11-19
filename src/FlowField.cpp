@@ -9,33 +9,56 @@ FlowField::FlowField(size_t t_width, size_t t_height)
 	for (auto& row : m_cells) row.resize(t_height);
 }
 
-void FlowField::setGoal(unsigned t_x, unsigned t_y)
+void FlowField::setGoal(unsigned t_x, unsigned t_y, bool t_generate)
 {
 	// If the new goal position is within the bounds of the cost field.
 	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
 	{
 		m_goal = { t_x, t_y };
+
+		if (t_generate)
+			generate();
 	}
 }
 
-void ff::FlowField::setGoal(Vector2u const& t_cell)
+void ff::FlowField::setGoal(Vector2u const& t_cell, bool t_generate)
 {
-	setGoal(t_cell.x, t_cell.y);
+	setGoal(t_cell.x, t_cell.y, t_generate);
 }
 
-void FlowField::setWall(unsigned t_x, unsigned t_y)
+void FlowField::setWall(unsigned t_x, unsigned t_y, bool t_generate)
 {
 	// If the new wall position is within the bounds of the cost field.
 	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
 	{
 		m_cells.at(t_x).at(t_y).cost = WALL_COST;
 		m_cells.at(t_x).at(t_y).integrationCost = WALL_INTEGRATION_COST;
+
+		if (t_generate)
+			generate();
 	}
 }
 
-void ff::FlowField::setWall(Vector2u const& t_cell)
+void ff::FlowField::setWall(Vector2u const& t_cell, bool t_generate)
 {
-	setWall(t_cell.x, t_cell.y);
+	setWall(t_cell.x, t_cell.y, t_generate);
+}
+
+void ff::FlowField::clearCell(unsigned t_x, unsigned t_y, bool t_generate)
+{
+	// If the new wall position is within the bounds of the cost field.
+	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
+	{
+		m_cells.at(t_x).at(t_y).cost = 0;
+
+		if (t_generate)
+			generate();
+	}
+}
+
+void ff::FlowField::clearCell(Vector2u const& t_cell, bool t_generate)
+{
+	clearCell(t_cell.x, t_cell.y, t_generate);
 }
 
 void FlowField::generate()
@@ -60,6 +83,16 @@ void FlowField::generate()
 	}
 
 	createFlowField();
+}
+
+Cell const& ff::FlowField::getCell(unsigned t_x, unsigned t_y) const
+{
+	return m_cells.at(t_x).at(t_y);
+}
+
+Cell const& ff::FlowField::getCell(Vector2u const& t_cell) const
+{
+	return m_cells.at(t_cell.x).at(t_cell.y);
 }
 
 std::vector<std::vector<Cell>> const& FlowField::getCells() const

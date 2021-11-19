@@ -29,12 +29,19 @@ namespace ff
 
 		FlowField(size_t t_width, size_t t_height);
 
-		void setGoal(unsigned t_x, unsigned t_y);
-		void setGoal(Vector2u const & t_cell);
-		void setWall(unsigned t_x, unsigned t_y);
-		void setWall(Vector2u const& t_cell);
+		void setGoal(unsigned t_x, unsigned t_y, bool t_generate = true);
+		void setGoal(Vector2u const & t_cell, bool t_generate = true);
+
+		void setWall(unsigned t_x, unsigned t_y, bool t_generate = true);
+		void setWall(Vector2u const& t_cell, bool t_generate = true);
+
+		void clearCell(unsigned t_x, unsigned t_y, bool t_generate = true);
+		void clearCell(Vector2u const& t_cell, bool t_generate = true);
 
 		void generate();
+
+		Cell const & getCell(unsigned t_x, unsigned t_y) const;
+		Cell const & getCell(Vector2u const& t_cell) const;
 
 		std::vector<std::vector<Cell>> const & getCells() const;
 

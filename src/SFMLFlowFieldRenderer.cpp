@@ -11,7 +11,7 @@ SFMLFlowFieldRenderer::SFMLFlowFieldRenderer(FlowField const * t_flowField, sf::
 	else
 		m_costText.setFont(m_costFont);
 
-	m_costText.setFillColor(sf::Color::Black);
+	//m_costText.setFillColor(sf::Color::Black);
 	m_costText.setCharacterSize(16u);
 	
 	// If a valid flow field was passed.
@@ -77,7 +77,7 @@ void SFMLFlowFieldRenderer::cacheRender()
 			// Sets up the rect for this cell.
 			rectangle.setPosition(position);
 			uint8_t value = std::max(50 - static_cast<int>(cost), 0) * 5u;
-			rectangle.setFillColor(sf::Color{ value, value, value });
+			rectangle.setFillColor(sf::Color{ 0u, 0u, value });
 
 			// Draws the text and rect.
 			m_renderTexture.draw(rectangle);
@@ -90,10 +90,10 @@ void SFMLFlowFieldRenderer::cacheRender()
 				static_cast<float>(bestNeighbour.y) * m_cellSize.y };
 
 			// Adds the start of the line as the tile position.
-			lines.append({ position + m_cellSize / 2.0f, sf::Color::White });
+			lines.append({ position + m_cellSize / 2.0f, sf::Color::Blue });
 
 			// Adds the end of the line as the best neighbours position.
-			lines.append({ neighbourPosition + m_cellSize / 2.0f, sf::Color::Blue });
+			lines.append({ neighbourPosition + m_cellSize / 2.0f, sf::Color::White });
 		}
 	}
 

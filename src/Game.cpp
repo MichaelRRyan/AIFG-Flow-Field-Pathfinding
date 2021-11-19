@@ -68,13 +68,15 @@ void Game::processEvents()
 			if (sf::Mouse::Button::Left == nextEvent.mouseButton.button)
 			{
 				m_flowField.setGoal(mouseCell);
-				m_flowField.generate();
 				m_flowFieldRenderer.cacheRender();
 			}
 			else if (sf::Mouse::Button::Right == nextEvent.mouseButton.button)
 			{
-				m_flowField.setWall(mouseCell);
-				m_flowField.generate();
+				if (m_flowField.getCell(mouseCell).cost == ff::WALL_COST)
+					m_flowField.clearCell(mouseCell);
+				else
+					m_flowField.setWall(mouseCell);
+
 				m_flowFieldRenderer.cacheRender();
 			}
 		}
