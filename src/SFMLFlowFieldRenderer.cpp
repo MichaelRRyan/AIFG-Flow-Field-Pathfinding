@@ -13,20 +13,44 @@ SFMLFlowFieldRenderer::SFMLFlowFieldRenderer(FlowField const * t_flowField, sf::
 
 	m_costText.setFillColor(sf::Color::Black);
 	m_costText.setCharacterSize(16u);
+	
+	// If a valid flow field was passed.
+	if (m_flowField)
+	{
+		sf::Vector2u cellSizeU{ m_cellSize };
+
+		m_renderTexture.create(m_flowField->getWidth() * cellSizeU.x,
+							   m_flowField->getHeight() * cellSizeU.y);
+
+		m_renderTextureSprite.setTexture(m_renderTexture.getTexture());
+	}
+	
 }
 
 void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 {
 	m_flowField = t_flowField;
+
+	// If a valid flow field was passed.
+	if (m_flowField)
+	{
+		sf::Vector2u cellSizeU{ m_cellSize };
+
+		m_renderTexture.create(m_flowField->getWidth() * cellSizeU.x,
+							   m_flowField->getHeight() * cellSizeU.y);
+
+		m_renderTextureSprite.setTexture(m_renderTexture.getTexture(), true);
+	}
 }
 
-void ff::SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const
+void ff::SFMLFlowFieldRenderer::cacheRender()
 {
 	if (m_flowField == nullptr) return;
 
-	auto & costField = m_flowField->getCostField();
-	auto & integrationField = m_flowField->getIntegrationField();
-	auto & flowField = m_flowField->getFlowField();
+	m_renderTexture.clear();
+
+	auto& costField = m_flowField->getCostField();
+	auto& flowField = m_flowField->getFlowField();
 
 	sf::RectangleShape rectangle;
 	rectangle.setSize(m_cellSize);
@@ -39,26 +63,37 @@ void ff::SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderState
 	{
 		for (int y = 0; y < costField.at(x).size(); ++y)
 		{
-			float posX = static_cast<float>(x) * m_cellSize.x;
-			float posY = static_cast<float>(y) * m_cellSize.y;
+			sf::Vector2f position{ static_cast<float>(x) * m_cellSize.x,
+							  static_cast<float>(y) * m_cellSize.y };
 
-			rectangle.setPosition(posX,	posY);
-
-			text.setPosition(posX + m_cellSize.x / 2.0f, posY + m_cellSize.y / 2.0f);
-			text.setString(std::to_string(integrationField.at(x).at(y)).substr(0, 3));
+			text.setPosition(position + m_cellSize / 2.0f);
+			text.setString(std::to_string(costField.at(x).at(y)));
 			sf::FloatRect rect = text.getGlobalBounds();
 			text.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 
-			Node2i direction = flowField.at(x).at(y);
+			Node2i directionNode = flowField.at(x).at(y);
+			sf::Vector2f direction{ static_cast<float>(directionNode.x) * m_cellSize.x,
+									 static_cast<float>(directionNode.y) * m_cellSize.y };
 
-			lines.append({ { posX + m_cellSize.x / 2.0f, posY + m_cellSize.y / 2.0f } , sf::Color::Red });
-			lines.append({ { posX + static_cast<float>(direction.x) * m_cellSize.x + m_cellSize.x / 2.0f,
-							 posY + static_cast<float>(direction.y) * m_cellSize.y + m_cellSize.x / 2.0f } , sf::Color::Blue });
+			// Adds the start of the line as the tile position.
+			lines.append({ position + m_cellSize / 2.0f, sf::Color::White });
 
-			t_target.draw(rectangle, t_states);
-			t_target.draw(text, t_states);
+			// Adds the end of the line as the end of the flow field vector.
+			lines.append({ position + direction + m_cellSize / 2.0f, sf::Color::Blue });
+
+			rectangle.setPosition(position);
+
+			m_renderTexture.draw(rectangle);
+			m_renderTexture.draw(text);
 		}
 	}
 
-	t_target.draw(lines, t_states);
+	m_renderTexture.draw(lines);
+	m_renderTexture.display();
+	sf::FloatRect bounds = m_renderTextureSprite.getGlobalBounds();
+}
+
+void ff::SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const
+{
+	t_target.draw(m_renderTextureSprite, t_states);
 }

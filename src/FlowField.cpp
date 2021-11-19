@@ -2,7 +2,7 @@
 
 using namespace ff;
 
-ff::FlowField::FlowField(int t_width, int t_height)
+ff::FlowField::FlowField(size_t t_width, size_t t_height)
 {
 	// Sets the width and height of the cost field.
 	m_costField.resize(t_width);
@@ -55,6 +55,18 @@ std::vector<std::vector<float>> const& ff::FlowField::getIntegrationField() cons
 std::vector<std::vector<Node2i>> const& ff::FlowField::getFlowField() const
 {
 	return m_flowField;
+}
+
+size_t ff::FlowField::getWidth() const
+{
+	return m_costField.size();
+}
+
+size_t ff::FlowField::getHeight() const
+{
+	if (m_costField.empty()) return 0;
+
+	return m_costField.at(0).size();
 }
 
 void ff::FlowField::setNeighboursCosts(Node2i t_tile, Node2i t_goal)

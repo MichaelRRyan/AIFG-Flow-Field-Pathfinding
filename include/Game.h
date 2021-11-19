@@ -26,9 +26,10 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 
-	sf::RenderWindow m_window;
-	bool m_exitGame;
+	sf::Vector2i const m_FLOW_FIELD_SIZE;
+	sf::Vector2f const m_CELL_SIZE;
 
+	sf::RenderWindow m_window;
 	ff::FlowField m_flowField;
 	ff::SFMLFlowFieldRenderer m_flowFieldRenderer;
 

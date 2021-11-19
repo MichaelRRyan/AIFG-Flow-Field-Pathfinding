@@ -17,13 +17,16 @@ namespace ff
 	{
 	public:
 
-		FlowField(int t_width, int t_height);
+		FlowField(size_t t_width, size_t t_height);
 
 		void setGoal(int t_x, int t_y);
 
 		std::vector<std::vector<int8_t>> const& getCostField() const;
 		std::vector<std::vector<float>> const & getIntegrationField() const;
 		std::vector<std::vector<Node2i>> const & getFlowField() const;
+
+		size_t getWidth() const;
+		size_t getHeight() const;
 
 	private:
 

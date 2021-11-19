@@ -15,6 +15,8 @@ namespace ff
 
 		void setFlowField(FlowField const * t_flowField);
 
+		void cacheRender();
+
 	private:
 
 		void draw(sf::RenderTarget & t_target, sf::RenderStates t_states) const override;
@@ -26,6 +28,8 @@ namespace ff
 		sf::Font m_costFont;
 		sf::Text m_costText;
 
+		sf::RenderTexture m_renderTexture;
+		sf::Sprite m_renderTextureSprite;
 	};
 }
 
