@@ -7,10 +7,20 @@
 
 namespace ff
 {
-	struct Node2i
+	unsigned const WALL_COST{ std::numeric_limits<unsigned>::max() };
+	float const WALL_INTEGRATION_COST{ std::numeric_limits<float>::max() };
+
+	struct Vector2u
 	{
-		int x;
-		int y;
+		unsigned x;
+		unsigned y;
+	};
+
+	struct Cell
+	{
+		unsigned cost;
+		float integrationCost;
+		Vector2u bestNeighbour;
 	};
 
 	class FlowField
@@ -19,26 +29,25 @@ namespace ff
 
 		FlowField(size_t t_width, size_t t_height);
 
-		void setGoal(int t_x, int t_y);
+		void setGoal(unsigned t_x, unsigned t_y);
+		void setWall(unsigned t_x, unsigned t_y);
+		void generate();
 
-		std::vector<std::vector<int8_t>> const& getCostField() const;
-		std::vector<std::vector<float>> const & getIntegrationField() const;
-		std::vector<std::vector<Node2i>> const & getFlowField() const;
+		std::vector<std::vector<Cell>> const & getCells() const;
 
 		size_t getWidth() const;
 		size_t getHeight() const;
 
 	private:
 
-		void setNeighboursCosts(Node2i t_tile, Node2i t_goal);
+		void setNeighboursCosts(Vector2u t_cell, Vector2u t_goal);
 		void createFlowField();
-		Node2i getBestNeighbour(Node2i t_tile);
+		Vector2u getBestNeighbour(Vector2u t_cell);
 
-		std::vector<std::vector<int8_t>> m_costField;
-		std::vector<std::vector<float>> m_integrationField;
-		std::vector<std::vector<Node2i>> m_flowField;
+		std::vector<std::vector<Cell>> m_cells;
+		std::queue<Vector2u> m_costSetupQueue;
 
-		std::queue<Node2i> m_costSetupQueue;
+		Vector2u m_goal;
 
 	};
 }

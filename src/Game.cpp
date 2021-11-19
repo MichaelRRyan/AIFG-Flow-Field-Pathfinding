@@ -9,7 +9,15 @@ Game::Game() :
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE }
 {
+	m_flowField.setWall(29, 31);
+	m_flowField.setWall(30, 31);
+	m_flowField.setWall(30, 30);
+	m_flowField.setWall(31, 30);
+	m_flowField.setWall(31, 29);
+
 	m_flowField.setGoal(49, 49);
+	m_flowField.generate();
+	
 	m_flowFieldRenderer.cacheRender();
 }
 

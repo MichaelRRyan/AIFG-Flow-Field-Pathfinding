@@ -43,14 +43,13 @@ void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 	}
 }
 
-void ff::SFMLFlowFieldRenderer::cacheRender()
+void SFMLFlowFieldRenderer::cacheRender()
 {
 	if (m_flowField == nullptr) return;
 
 	m_renderTexture.clear();
 
-	auto& costField = m_flowField->getCostField();
-	auto& flowField = m_flowField->getFlowField();
+	auto& cells = m_flowField->getCells();
 
 	sf::RectangleShape rectangle;
 	rectangle.setSize(m_cellSize);
@@ -59,37 +58,44 @@ void ff::SFMLFlowFieldRenderer::cacheRender()
 
 	sf::VertexArray lines{ sf::Lines };
 
-	for (int x = 0; x < costField.size(); ++x)
+	for (unsigned x = 0; x < cells.size(); ++x)
 	{
-		for (int y = 0; y < costField.at(x).size(); ++y)
+		for (unsigned y = 0; y < cells.at(x).size(); ++y)
 		{
+			// Continues to the next cell if a wall.
+			if (cells.at(x).at(y).cost == WALL_COST) continue;
+
+			// Takes some cell info for ease of access.
+			unsigned cost = cells.at(x).at(y).cost;
 			sf::Vector2f position{ static_cast<float>(x) * m_cellSize.x,
-							  static_cast<float>(y) * m_cellSize.y };
+								   static_cast<float>(y) * m_cellSize.y };
 
-			int8_t cost = costField.at(x).at(y);
-
+			// Sets up the text for this cell.
 			text.setPosition(position + m_cellSize / 2.0f);
 			text.setString(std::to_string(cost));
 			sf::FloatRect rect = text.getGlobalBounds();
 			text.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 
-			Node2i directionNode = flowField.at(x).at(y);
-			sf::Vector2f direction{ static_cast<float>(directionNode.x) * m_cellSize.x,
-									 static_cast<float>(directionNode.y) * m_cellSize.y };
+			// Sets up the rect for this cell.
+			rectangle.setPosition(position);
+			uint8_t value = std::max(50 - static_cast<int>(cost), 0) * 5u;
+			rectangle.setFillColor(sf::Color{ value, value, value });
+
+			// Draws the text and rect.
+			m_renderTexture.draw(text);
+			m_renderTexture.draw(rectangle);
+			
+			// Adds the flow lines.
+			Vector2u bestNeighbour = cells.at(x).at(y).bestNeighbour;
+			sf::Vector2f neighbourPosition{
+				static_cast<float>(bestNeighbour.x) * m_cellSize.x,
+				static_cast<float>(bestNeighbour.y) * m_cellSize.y };
 
 			// Adds the start of the line as the tile position.
 			lines.append({ position + m_cellSize / 2.0f, sf::Color::White });
 
-			// Adds the end of the line as the end of the flow field vector.
-			lines.append({ position + direction + m_cellSize / 2.0f, sf::Color::Blue });
-
-			rectangle.setPosition(position);
-
-			uint8_t value = std::max(50 - cost, 0) * 5;
-			rectangle.setFillColor(sf::Color{ value, value, value });
-
-			m_renderTexture.draw(rectangle);
-			m_renderTexture.draw(text);
+			// Adds the end of the line as the best neighbours position.
+			lines.append({ neighbourPosition + m_cellSize / 2.0f, sf::Color::Blue });
 		}
 	}
 
@@ -98,7 +104,7 @@ void ff::SFMLFlowFieldRenderer::cacheRender()
 	sf::FloatRect bounds = m_renderTextureSprite.getGlobalBounds();
 }
 
-void ff::SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const
+void SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const
 {
 	t_target.draw(m_renderTextureSprite, t_states);
 }

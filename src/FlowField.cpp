@@ -2,114 +2,117 @@
 
 using namespace ff;
 
-ff::FlowField::FlowField(size_t t_width, size_t t_height)
+FlowField::FlowField(size_t t_width, size_t t_height)
 {
-	// Sets the width and height of the cost field.
-	m_costField.resize(t_width);
-	for (auto & row : m_costField) row.resize(t_height);
-
-	// Sets the width and height of the integration field.
-	m_integrationField.resize(t_width);
-	for (auto& row : m_integrationField) row.resize(t_height);
-
-	// Sets the width and height of the flow field.
-	m_flowField.resize(t_width);
-	for (auto& row : m_flowField) row.resize(t_height);
+	// Sets the width and height of the cell grid.
+	m_cells.resize(t_width);
+	for (auto& row : m_cells) row.resize(t_height);
 }
 
-void ff::FlowField::setGoal(int t_x, int t_y)
+void FlowField::setGoal(unsigned t_x, unsigned t_y)
 {
 	// If the new goal position is within the bounds of the cost field.
-	if (t_x > 0 && t_x < m_costField.size() &&
-		t_y > 0 && t_y < m_costField.at(0).size())
+	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
 	{
-		m_costField.at(t_x).at(t_y) = 0;
-		m_costSetupQueue.push({ t_x, t_y });
-
-		while (!m_costSetupQueue.empty())
-		{
-			Node2i node = m_costSetupQueue.front();
-			m_costSetupQueue.pop();
-
-			setNeighboursCosts(node, { t_x, t_y });
-		}
-
-		// Goal has been overwritten in the process, set it back to 0.
-		m_costField.at(t_x).at(t_y) = 0;
-		m_integrationField.at(t_x).at(t_y) = 0.0f;
-
-		createFlowField();
+		m_cells.at(t_x).at(t_y).cost = 0;
+		m_goal = { t_x, t_y };
 	}
 }
 
-std::vector<std::vector<int8_t>> const& ff::FlowField::getCostField() const
+void FlowField::setWall(unsigned t_x, unsigned t_y)
 {
-	return m_costField;
+	// If the new wall position is within the bounds of the cost field.
+	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
+	{
+		m_cells.at(t_x).at(t_y).cost = WALL_COST;
+		m_cells.at(t_x).at(t_y).integrationCost = WALL_INTEGRATION_COST;
+	}
 }
 
-std::vector<std::vector<float>> const& ff::FlowField::getIntegrationField() const
+void FlowField::generate()
 {
-	return m_integrationField;
+	// Resets all non-wall cells to 0.
+	for (auto & row : m_cells)
+		for (auto & cell : row)
+			if (cell.cost != WALL_COST) cell.cost = 0u;
+
+	m_costSetupQueue.push(m_goal);
+
+	while (!m_costSetupQueue.empty())
+	{
+		Vector2u cell = m_costSetupQueue.front();
+		m_costSetupQueue.pop();
+
+		setNeighboursCosts(cell, m_goal);
+	}
+
+	createFlowField();
 }
 
-std::vector<std::vector<Node2i>> const& ff::FlowField::getFlowField() const
+std::vector<std::vector<Cell>> const& FlowField::getCells() const
 {
-	return m_flowField;
+	return m_cells;
 }
 
-size_t ff::FlowField::getWidth() const
+size_t FlowField::getWidth() const
 {
-	return m_costField.size();
+	return m_cells.size();
 }
 
-size_t ff::FlowField::getHeight() const
+size_t FlowField::getHeight() const
 {
-	if (m_costField.empty()) return 0;
+	if (m_cells.empty()) return 0;
 
-	return m_costField.at(0).size();
+	return m_cells.at(0).size();
 }
 
-void ff::FlowField::setNeighboursCosts(Node2i t_tile, Node2i t_goal)
+void FlowField::setNeighboursCosts(Vector2u t_cell, Vector2u t_goal)
 {
 	for (int direction = 0; direction < 9; ++direction)
 	{
-		if (direction == 4) continue; // Skip 4 - 4 refers to ourselves.
+		if (direction == 4) continue; // Skip index 4 as refers to ourselves.
 
-		int x = t_tile.x + (direction / 3) - 1; // Neighbour col.
-		int y = t_tile.y + (direction % 3) - 1; // Neighbour row.
+		// Works out the neighbours x and y using the neighbours algorithm.
+		int x = t_cell.x + (direction / 3) - 1;
+		int y = t_cell.y + (direction % 3) - 1;
 
-		// Checks the bounds.
-		if (x >= 0 && x < m_costField.size() &&
-			y >= 0 && y < m_costField.at(x).size())
+		// Checks the x and y are within the flow field bounds.
+		if (x >= 0 && y >= 0 && x < m_cells.size() && y < m_cells.at(x).size())
 		{
-			if (m_costField.at(x).at(y) != 0) continue;
+			// Continues if this cell has already been checked or is the goal.
+			if (m_cells.at(x).at(y).cost != 0 || (t_goal.x == x && t_goal.y == y)) continue;
 
-			int8_t cost = m_costField.at(t_tile.x).at(t_tile.y) + 1;
-			m_costField.at(x).at(y) = cost;
+			// Works out the cost of the cell.
+			unsigned cost = m_cells.at(t_cell.x).at(t_cell.y).cost + 1;
+			m_cells.at(x).at(y).cost = cost;
 
-			Node2i distVec = { t_goal.x - x, t_goal.y - y };
+			// Work out integration cost.
+			Vector2u distVec = { t_goal.x - x, t_goal.y - y };
 			float distance = sqrt(pow(static_cast<float>(distVec.x), 2.0f) +
 								  pow(static_cast<float>(distVec.y), 2.0f));
 
-			m_integrationField.at(x).at(y) = static_cast<float>(cost * 100) + distance;
-			m_costSetupQueue.push({ x, y });
+			m_cells.at(x).at(y).integrationCost = static_cast<float>(cost) * 100.0f + distance;
+
+			// Adds the cell to the queue.
+			m_costSetupQueue.push({ static_cast<unsigned>(x), 
+									static_cast<unsigned>(y) });
 		}
 	}
 }
 
-void ff::FlowField::createFlowField()
+void FlowField::createFlowField()
 {
-	for (int x = 0; x < m_integrationField.size(); ++x)
+	for (unsigned x = 0; x < m_cells.size(); ++x)
 	{
-		for (int y = 0; y < m_integrationField.at(x).size(); ++y)
+		for (unsigned y = 0; y < m_cells.at(x).size(); ++y)
 		{
-			Node2i node = getBestNeighbour({ x, y });
-			m_flowField.at(x).at(y) = { node.x - x, node.y - y };
+			Vector2u node = getBestNeighbour({ x, y });
+			m_cells.at(x).at(y).bestNeighbour = { node.x, node.y };
 		}
 	}
 }
 
-Node2i ff::FlowField::getBestNeighbour(Node2i t_tile)
+Vector2u FlowField::getBestNeighbour(Vector2u t_tile)
 {
 	int bestDir = -1;
 	float bestDirValue = 0.0f;
@@ -122,17 +125,17 @@ Node2i ff::FlowField::getBestNeighbour(Node2i t_tile)
 		int y = t_tile.y + (direction % 3) - 1; // Neighbour row.
 
 		// Checks the bounds.
-		if (x >= 0 && x < m_integrationField.size() &&
-			y >= 0 && y < m_integrationField.at(x).size())
+		if (x >= 0 && x < m_cells.size() &&
+			y >= 0 && y < m_cells.at(x).size())
 		{
-			if (bestDir == -1 || m_integrationField.at(x).at(y) < bestDirValue)
+			if (bestDir == -1 || m_cells.at(x).at(y).integrationCost < bestDirValue)
 			{
 				bestDir = direction;
-				bestDirValue = m_integrationField.at(x).at(y);
+				bestDirValue = m_cells.at(x).at(y).integrationCost;
 			}
 		}
 	}
 
-	return Node2i{ t_tile.x + (bestDir / 3) - 1,
-				   t_tile.y + (bestDir % 3) - 1 };
+	return Vector2u{ t_tile.x + (bestDir / 3) - 1,
+				     t_tile.y + (bestDir % 3) - 1 };
 }
