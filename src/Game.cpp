@@ -9,13 +9,7 @@ Game::Game() :
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE }
 {
-	m_flowField.setWall(29, 31);
-	m_flowField.setWall(30, 31);
-	m_flowField.setWall(30, 30);
-	m_flowField.setWall(31, 30);
-	m_flowField.setWall(31, 29);
-
-	m_flowField.setGoal(49, 49);
+	m_flowField.setGoal(10, 10);
 	m_flowField.generate();
 	
 	m_flowFieldRenderer.cacheRender();
@@ -64,6 +58,25 @@ void Game::processEvents()
 		if (sf::Event::Closed == nextEvent.type) // check if the close window button is clicked on.
 		{
 			m_window.close();
+		}
+		else if (sf::Event::MouseButtonPressed == nextEvent.type)
+		{
+			ff::Vector2u mouseCell{
+					nextEvent.mouseButton.x / static_cast<int>(m_CELL_SIZE.x),
+					nextEvent.mouseButton.y / static_cast<int>(m_CELL_SIZE.y) };
+			
+			if (sf::Mouse::Button::Left == nextEvent.mouseButton.button)
+			{
+				m_flowField.setGoal(mouseCell);
+				m_flowField.generate();
+				m_flowFieldRenderer.cacheRender();
+			}
+			else if (sf::Mouse::Button::Right == nextEvent.mouseButton.button)
+			{
+				m_flowField.setWall(mouseCell);
+				m_flowField.generate();
+				m_flowFieldRenderer.cacheRender();
+			}
 		}
 	}
 }

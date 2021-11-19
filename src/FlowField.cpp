@@ -14,9 +14,13 @@ void FlowField::setGoal(unsigned t_x, unsigned t_y)
 	// If the new goal position is within the bounds of the cost field.
 	if (t_x < m_cells.size() && t_y < m_cells.at(0).size())
 	{
-		m_cells.at(t_x).at(t_y).cost = 0;
 		m_goal = { t_x, t_y };
 	}
+}
+
+void ff::FlowField::setGoal(Vector2u const& t_cell)
+{
+	setGoal(t_cell.x, t_cell.y);
 }
 
 void FlowField::setWall(unsigned t_x, unsigned t_y)
@@ -29,12 +33,21 @@ void FlowField::setWall(unsigned t_x, unsigned t_y)
 	}
 }
 
+void ff::FlowField::setWall(Vector2u const& t_cell)
+{
+	setWall(t_cell.x, t_cell.y);
+}
+
 void FlowField::generate()
 {
 	// Resets all non-wall cells to 0.
 	for (auto & row : m_cells)
 		for (auto & cell : row)
 			if (cell.cost != WALL_COST) cell.cost = 0u;
+
+	m_cells.at(m_goal.x).at(m_goal.y).cost = 0;
+	m_cells.at(m_goal.x).at(m_goal.y).integrationCost = 0.0f;
+	m_cells.at(m_goal.x).at(m_goal.y).bestNeighbour = m_goal;
 
 	m_costSetupQueue.push(m_goal);
 
@@ -87,9 +100,9 @@ void FlowField::setNeighboursCosts(Vector2u t_cell, Vector2u t_goal)
 			m_cells.at(x).at(y).cost = cost;
 
 			// Work out integration cost.
-			Vector2u distVec = { t_goal.x - x, t_goal.y - y };
-			float distance = sqrt(pow(static_cast<float>(distVec.x), 2.0f) +
-								  pow(static_cast<float>(distVec.y), 2.0f));
+			float distX = static_cast<float>(t_goal.x) - x;
+			float distY = static_cast<float>(t_goal.y) - y;
+			float distance = sqrt(distX * distX + distY * distY);
 
 			m_cells.at(x).at(y).integrationCost = static_cast<float>(cost) * 100.0f + distance;
 

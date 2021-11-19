@@ -54,8 +54,6 @@ void SFMLFlowFieldRenderer::cacheRender()
 	sf::RectangleShape rectangle;
 	rectangle.setSize(m_cellSize);
 
-	sf::Text text = m_costText;
-
 	sf::VertexArray lines{ sf::Lines };
 
 	for (unsigned x = 0; x < cells.size(); ++x)
@@ -71,10 +69,10 @@ void SFMLFlowFieldRenderer::cacheRender()
 								   static_cast<float>(y) * m_cellSize.y };
 
 			// Sets up the text for this cell.
-			text.setPosition(position + m_cellSize / 2.0f);
-			text.setString(std::to_string(cost));
-			sf::FloatRect rect = text.getGlobalBounds();
-			text.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
+			m_costText.setPosition(position + m_cellSize / 2.0f);
+			m_costText.setString(std::to_string(cost));
+			sf::FloatRect rect = m_costText.getGlobalBounds();
+			m_costText.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 
 			// Sets up the rect for this cell.
 			rectangle.setPosition(position);
@@ -82,8 +80,8 @@ void SFMLFlowFieldRenderer::cacheRender()
 			rectangle.setFillColor(sf::Color{ value, value, value });
 
 			// Draws the text and rect.
-			m_renderTexture.draw(text);
 			m_renderTexture.draw(rectangle);
+			m_renderTexture.draw(m_costText);
 			
 			// Adds the flow lines.
 			Vector2u bestNeighbour = cells.at(x).at(y).bestNeighbour;
