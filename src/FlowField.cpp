@@ -125,7 +125,7 @@ Node2i ff::FlowField::getBestNeighbour(Node2i t_tile)
 		if (x >= 0 && x < m_integrationField.size() &&
 			y >= 0 && y < m_integrationField.at(x).size())
 		{
-			if (bestDir == -1 || m_integrationField.at(x).at(y) > bestDirValue)
+			if (bestDir == -1 || m_integrationField.at(x).at(y) < bestDirValue)
 			{
 				bestDir = direction;
 				bestDirValue = m_integrationField.at(x).at(y);

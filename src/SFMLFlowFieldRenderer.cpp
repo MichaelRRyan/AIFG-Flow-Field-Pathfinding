@@ -66,8 +66,10 @@ void ff::SFMLFlowFieldRenderer::cacheRender()
 			sf::Vector2f position{ static_cast<float>(x) * m_cellSize.x,
 							  static_cast<float>(y) * m_cellSize.y };
 
+			int8_t cost = costField.at(x).at(y);
+
 			text.setPosition(position + m_cellSize / 2.0f);
-			text.setString(std::to_string(costField.at(x).at(y)));
+			text.setString(std::to_string(cost));
 			sf::FloatRect rect = text.getGlobalBounds();
 			text.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 
@@ -82,6 +84,9 @@ void ff::SFMLFlowFieldRenderer::cacheRender()
 			lines.append({ position + direction + m_cellSize / 2.0f, sf::Color::Blue });
 
 			rectangle.setPosition(position);
+
+			uint8_t value = std::max(50 - cost, 0) * 5;
+			rectangle.setFillColor(sf::Color{ value, value, value });
 
 			m_renderTexture.draw(rectangle);
 			m_renderTexture.draw(text);

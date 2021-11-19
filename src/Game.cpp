@@ -9,7 +9,7 @@ Game::Game() :
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE }
 {
-	m_flowField.setGoal(30, 30);
+	m_flowField.setGoal(49, 49);
 	m_flowFieldRenderer.cacheRender();
 }
 
