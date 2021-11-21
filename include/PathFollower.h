@@ -13,7 +13,8 @@ public:
 
 	void update();
 
-	void setPath(std::list<ff::Vector2u> * t_path);
+	void setPath(std::list<ff::Vector2u>* t_path);
+	std::list<ff::Vector2u> * getPath() const;
 
 	void setPosition(sf::Vector2f const & t_position);
 	sf::Vector2f const & getPosition() const;

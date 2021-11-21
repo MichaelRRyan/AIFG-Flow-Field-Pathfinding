@@ -97,16 +97,14 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 
 		if (path)
 		{
-			m_pathFollower.setPath(path);
 			m_pathFollower.setVisible(true);
 			m_pathFollower.setPosition({ 
 				static_cast<float>(mouseCell.x) * m_CELL_SIZE.x, 
 				static_cast<float>(mouseCell.y) * m_CELL_SIZE.x });
 
-			m_flowFieldRenderer.cacheRender();
+			delete m_pathFollower.getPath();
 			m_pathRenderer.setPath(path);
-
-			//delete path; Clean up path somewhere.
+			m_pathFollower.setPath(path);
 		}
 	}
 	else
@@ -135,11 +133,12 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 		}
 
 		m_pathFollower.setVisible(path != nullptr);
+
+		delete m_pathFollower.getPath();
 		m_pathFollower.setPath(path);
-		m_flowFieldRenderer.cacheRender();
 		m_pathRenderer.setPath(path);
 
-		//delete path; Clean up path somewhere.
+		m_flowFieldRenderer.cacheRender();
 	}
 }
 

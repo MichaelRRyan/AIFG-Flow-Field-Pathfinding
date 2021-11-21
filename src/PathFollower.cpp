@@ -35,6 +35,12 @@ void PathFollower::setPath(std::list<ff::Vector2u>* t_path)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+std::list<ff::Vector2u>* PathFollower::getPath() const
+{
+	return m_path;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void PathFollower::setPosition(sf::Vector2f const& t_position)
 {
 	m_shape.setPosition(t_position);
