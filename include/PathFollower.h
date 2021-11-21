@@ -28,7 +28,7 @@ private:
 
 	void draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const override;
 
-	std::list<ff::Vector2u>* m_path;
+	std::list<ff::Vector2u> * m_path;
 
 	sf::RectangleShape m_shape;
 	sf::Vector2f m_cellSize;

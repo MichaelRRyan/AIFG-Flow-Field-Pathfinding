@@ -15,7 +15,7 @@ namespace ff
 
 		void setFlowField(FlowField const * t_flowField);
 
-		void cacheRender(std::list<Vector2u> const * t_path = nullptr);
+		void cacheRender();
 
 		void setRenderCosts(bool t_flag);
 		void setRenderVectors(bool t_flag);
@@ -35,8 +35,6 @@ namespace ff
 		void drawVectors(sf::Vector2f const & t_position, 
 						 Vector2u const & t_bestNeighbour, 
 						 sf::VertexArray& t_lines);
-
-		void drawPath(std::list<Vector2u> const & t_path);
 
 		void draw(sf::RenderTarget & t_target, sf::RenderStates t_states) const override;
 

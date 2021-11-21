@@ -41,7 +41,7 @@ void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 	}
 }
 
-void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
+void SFMLFlowFieldRenderer::cacheRender()
 {
 	if (m_flowField == nullptr) return;
 
@@ -73,11 +73,6 @@ void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
 				if (m_renderVectors)
 					drawVectors(position, cells.at(x).at(y).bestNeighbour, lines);
 		}
-	}
-
-	if (t_path)
-	{
-		drawPath(*t_path);
 	}
 
 	m_renderTexture.draw(lines);
@@ -154,21 +149,6 @@ void ff::SFMLFlowFieldRenderer::drawVectors(sf::Vector2f const & t_position,
 
 	// Adds the end of the line as the best neighbours position.
 	t_lines.append({ neighbourPosition + m_cellSize / 2.0f, sf::Color::White });
-}
-
-void ff::SFMLFlowFieldRenderer::drawPath(std::list<Vector2u> const& t_path)
-{
-	sf::RectangleShape rectangle;
-	rectangle.setSize(m_cellSize);
-	rectangle.setFillColor(sf::Color::Yellow);
-
-	auto end = --t_path.end(); // Skips the last as we'll draw that separately.
-	for (auto it = t_path.begin(); it != end; ++it)
-	{
-		rectangle.setPosition({ static_cast<float>(it->x) * m_cellSize.x,
-								static_cast<float>(it->y) * m_cellSize.y });
-		m_renderTexture.draw(rectangle);
-	}
 }
 
 void SFMLFlowFieldRenderer::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const

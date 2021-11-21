@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "FlowField.h"
 #include "SFMLFlowFieldRenderer.h"
+#include "SFMLPathRenderer.h"
 #include "PathFollower.h"
 
 /// <summary>
@@ -36,6 +37,7 @@ private:
 	sf::RenderWindow m_window;
 	ff::FlowField m_flowField;
 	ff::SFMLFlowFieldRenderer m_flowFieldRenderer;
+	ff::SFMLPathRenderer m_pathRenderer;
 
 	PathFollower m_pathFollower;
 

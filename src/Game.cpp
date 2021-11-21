@@ -8,6 +8,7 @@ Game::Game() :
 	m_CELL_SIZE{ 20.0f, 20.0f },
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE },
+	m_pathRenderer{ m_CELL_SIZE },
 	m_pathFollower{ m_CELL_SIZE }
 {
 	m_flowField.setGoal(10, 10);
@@ -78,6 +79,7 @@ void Game::render()
 {
 	m_window.clear();
 	m_window.draw(m_flowFieldRenderer);
+	m_window.draw(m_pathRenderer);
 	m_window.draw(m_pathFollower);
 	m_window.display();
 }
@@ -101,7 +103,8 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 				static_cast<float>(mouseCell.x) * m_CELL_SIZE.x, 
 				static_cast<float>(mouseCell.y) * m_CELL_SIZE.x });
 
-			m_flowFieldRenderer.cacheRender(path);
+			m_flowFieldRenderer.cacheRender();
+			m_pathRenderer.setPath(path);
 
 			//delete path; Clean up path somewhere.
 		}
@@ -133,7 +136,8 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 
 		m_pathFollower.setVisible(path != nullptr);
 		m_pathFollower.setPath(path);
-		m_flowFieldRenderer.cacheRender(path);
+		m_flowFieldRenderer.cacheRender();
+		m_pathRenderer.setPath(path);
 
 		//delete path; Clean up path somewhere.
 	}

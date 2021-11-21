@@ -146,6 +146,7 @@
     <ClCompile Include="src\SFMLFlowFieldRenderer.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\SFMLPathRenderer.cpp" />
     <ClCompile Include="src\Vector2u.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="include\PathFollower.h" />
     <ClInclude Include="include\SFMLFlowFieldRenderer.h" />
     <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\SFMLPathRenderer.h" />
     <ClInclude Include="include\Vector2u.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
