@@ -26,12 +26,17 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 
+	void processMousePressedEvents(sf::Event const & t_event);
+	void processKeyPressedEvents(sf::Event const & t_event);
+
 	sf::Vector2i const m_FLOW_FIELD_SIZE;
 	sf::Vector2f const m_CELL_SIZE;
 
 	sf::RenderWindow m_window;
 	ff::FlowField m_flowField;
 	ff::SFMLFlowFieldRenderer m_flowFieldRenderer;
+
+	ff::Vector2u * m_pathStart;
 
 };
 

@@ -2,12 +2,13 @@
 
 #include "..\include\Game.h"
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 Game::Game() :
 	m_FLOW_FIELD_SIZE{ 50, 50 },
 	m_CELL_SIZE{ 20.0f, 20.0f },
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
-	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE }
+	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE },
+	m_pathStart{ nullptr }
 {
 	m_flowField.setGoal(10, 10);
 	m_flowField.generate();
@@ -15,13 +16,13 @@ Game::Game() :
 	m_flowFieldRenderer.cacheRender();
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 Game::~Game()
 {
-
+	if (m_pathStart) delete m_pathStart;
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void Game::run()
 {
 	sf::Vector2u windowSize{
@@ -49,7 +50,7 @@ void Game::run()
 	}
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void Game::processEvents()
 {
 	sf::Event nextEvent;
@@ -60,40 +61,18 @@ void Game::processEvents()
 			m_window.close();
 		}
 		else if (sf::Event::MouseButtonPressed == nextEvent.type)
-		{
-			ff::Vector2u mouseCell{
-					nextEvent.mouseButton.x / static_cast<int>(m_CELL_SIZE.x),
-					nextEvent.mouseButton.y / static_cast<int>(m_CELL_SIZE.y) };
-			
-			if (sf::Mouse::Button::Left == nextEvent.mouseButton.button)
-			{
-				m_flowField.setGoal(mouseCell);
-				m_flowFieldRenderer.cacheRender();
-			}
-			else if (sf::Mouse::Button::Right == nextEvent.mouseButton.button)
-			{
-				if (m_flowField.getCell(mouseCell).cost == ff::IMPASSABLE_COST)
-					m_flowField.clearCell(mouseCell);
-				else
-					m_flowField.setWall(mouseCell);
-
-				m_flowFieldRenderer.cacheRender();
-			}
-			else if (sf::Mouse::Button::Middle == nextEvent.mouseButton.button)
-			{
-				m_flowFieldRenderer.cacheRender(
-					m_flowField.getPathToGoal(mouseCell));
-			}
-		}
+			processMousePressedEvents(nextEvent);
+		else if (sf::Event::KeyPressed == nextEvent.type)
+			processKeyPressedEvents(nextEvent);
 	}
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void Game::update(sf::Time t_deltaTime)
 {
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void Game::render()
 {
 	m_window.clear();
@@ -101,4 +80,49 @@ void Game::render()
 	m_window.display();
 }
 
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+void Game::processMousePressedEvents(sf::Event const& t_event)
+{
+	ff::Vector2u mouseCell{
+		t_event.mouseButton.x / static_cast<int>(m_CELL_SIZE.x),
+		t_event.mouseButton.y / static_cast<int>(m_CELL_SIZE.y) };
+
+	if (sf::Mouse::Button::Left == t_event.mouseButton.button)
+	{
+		m_flowField.setGoal(mouseCell);
+		m_flowFieldRenderer.cacheRender();
+	}
+	else if (sf::Mouse::Button::Right == t_event.mouseButton.button)
+	{
+		if (m_flowField.getCell(mouseCell).cost == ff::IMPASSABLE_COST)
+			m_flowField.clearCell(mouseCell);
+		else
+			m_flowField.setWall(mouseCell);
+
+		m_flowFieldRenderer.cacheRender();
+	}
+	else if (sf::Mouse::Button::Middle == t_event.mouseButton.button)
+	{
+		m_pathStart = new ff::Vector2u{ mouseCell };
+		std::list<ff::Vector2u> const * path = m_flowField.getPathToGoal(mouseCell);
+		m_flowFieldRenderer.cacheRender(path, m_pathStart);
+		delete path;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Game::processKeyPressedEvents(sf::Event const& t_event)
+{
+	if (sf::Keyboard::Num1 == t_event.key.code)
+	{
+		m_flowFieldRenderer.setRenderCosts(!m_flowFieldRenderer.getRenderCosts());
+		m_flowFieldRenderer.cacheRender();
+	}
+	else if (sf::Keyboard::Num2 == t_event.key.code)
+	{
+		m_flowFieldRenderer.setRenderVectors(!m_flowFieldRenderer.getRenderVectors());
+		m_flowFieldRenderer.cacheRender();
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////

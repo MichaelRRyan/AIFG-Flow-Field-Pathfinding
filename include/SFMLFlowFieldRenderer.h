@@ -15,7 +15,15 @@ namespace ff
 
 		void setFlowField(FlowField const * t_flowField);
 
-		void cacheRender(std::list<Vector2u> const * t_path = nullptr);
+		void cacheRender(std::list<Vector2u> const * t_path = nullptr, 
+						 Vector2u const * t_pathStart = nullptr);
+
+		void setRenderCosts(bool t_flag);
+		void setRenderVectors(bool t_flag);
+
+		bool getRenderCosts() const;
+		bool getRenderVectors() const;
+
 
 	private:
 
@@ -42,6 +50,10 @@ namespace ff
 
 		sf::RenderTexture m_renderTexture;
 		sf::Sprite m_renderTextureSprite;
+
+		bool m_renderCosts;
+		bool m_renderVectors;
+
 	};
 }
 

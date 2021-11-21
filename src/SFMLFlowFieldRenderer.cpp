@@ -4,7 +4,9 @@ using namespace ff;
 
 SFMLFlowFieldRenderer::SFMLFlowFieldRenderer(FlowField const * t_flowField, sf::Vector2f t_cellSize) :
 	m_flowField{ t_flowField },
-	m_cellSize{ t_cellSize }
+	m_cellSize{ t_cellSize },
+	m_renderCosts{ true },
+	m_renderVectors{ true }
 {
 	if (!m_costFont.loadFromFile("C:/Windows/Fonts/arial.ttf"))
 		throw("Error loading Arial font from \"C:/Windows/Fonts/arial.ttf\".");
@@ -39,7 +41,8 @@ void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 	}
 }
 
-void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
+void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path,
+										Vector2u const * t_pathStart)
 {
 	if (m_flowField == nullptr) return;
 
@@ -63,18 +66,51 @@ void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
 								   static_cast<float>(y) * m_cellSize.y };
 
 			drawHeatmap(rectangle, position, cost);
-			drawCostText(position, cost);
-			drawVectors(position, cells.at(x).at(y).bestNeighbour, lines);
+
+			if (m_renderCosts)
+				drawCostText(position, cost);
+
+			if (m_renderVectors)
+				drawVectors(position, cells.at(x).at(y).bestNeighbour, lines);
 		}
 	}
 
 	if (t_path) drawPath(*t_path);
 
+	// Draws the start of the path if not nullptr.
+	if (t_pathStart)
+	{
+		rectangle.setPosition({ static_cast<float>(t_pathStart->x) * m_cellSize.x, 
+								static_cast<float>(t_pathStart->y) * m_cellSize.y });
+		rectangle.setFillColor(sf::Color::Red);
+		m_renderTexture.draw(rectangle);
+	}
+
 	m_renderTexture.draw(lines);
 	m_renderTexture.display();
 }
 
-void ff::SFMLFlowFieldRenderer::drawCostText(sf::Vector2f const& t_position, 
+void ff::SFMLFlowFieldRenderer::setRenderCosts(bool t_flag)
+{
+	m_renderCosts = t_flag;
+}
+
+void ff::SFMLFlowFieldRenderer::setRenderVectors(bool t_flag)
+{
+	m_renderVectors = t_flag;
+}
+
+bool ff::SFMLFlowFieldRenderer::getRenderCosts() const
+{
+	return m_renderCosts;
+}
+
+bool ff::SFMLFlowFieldRenderer::getRenderVectors() const
+{
+	return m_renderVectors;
+}
+
+void ff::SFMLFlowFieldRenderer::drawCostText(sf::Vector2f const& t_position,
 											 unsigned t_cost)
 {
 	m_costText.setPosition(t_position + m_cellSize / 2.0f);
@@ -88,8 +124,14 @@ void ff::SFMLFlowFieldRenderer::drawHeatmap(sf::RectangleShape& t_renderRect,
 											sf::Vector2f const& t_position, 
 											unsigned t_cost)
 {
-	uint8_t value = std::max(50 - static_cast<int>(t_cost), 0) * 5u;
-	t_renderRect.setFillColor(sf::Color{ 0u, 0u, value });
+	if (t_cost == 0u)
+		t_renderRect.setFillColor(sf::Color::Green);
+	else
+	{
+		uint8_t value = std::max(50 - static_cast<int>(t_cost), 0) * 5u;
+		t_renderRect.setFillColor(sf::Color{ 0u, 0u, value });
+	}
+	
 	t_renderRect.setPosition(t_position);
 	m_renderTexture.draw(t_renderRect);
 }
@@ -113,14 +155,13 @@ void ff::SFMLFlowFieldRenderer::drawPath(std::list<Vector2u> const& t_path)
 {
 	sf::RectangleShape rectangle;
 	rectangle.setSize(m_cellSize);
+	rectangle.setFillColor(sf::Color::Yellow);
 
-	for (auto it = t_path.begin(); it != t_path.end(); ++it)
+	auto end = --t_path.end(); // Skips the last as we'll draw that separately.
+	for (auto it = t_path.begin(); it != end; ++it)
 	{
-		sf::Vector2f position{ static_cast<float>(it->x) * m_cellSize.x,
-								static_cast<float>(it->y) * m_cellSize.y };
-
-		rectangle.setPosition(position);
-		rectangle.setFillColor(sf::Color{ 255u, 0u, 0u });
+		rectangle.setPosition({ static_cast<float>(it->x) * m_cellSize.x,
+								static_cast<float>(it->y) * m_cellSize.y });
 		m_renderTexture.draw(rectangle);
 	}
 }
