@@ -70,6 +70,7 @@ void Game::processEvents()
 ///////////////////////////////////////////////////////////////////////////////
 void Game::update(sf::Time t_deltaTime)
 {
+	m_pathFollower.update();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,17 +91,19 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 
 	if (sf::Mouse::Button::Middle == t_event.mouseButton.button)
 	{
-		std::list<ff::Vector2u> const* path = m_flowField.getPathToGoal(mouseCell);
+		std::list<ff::Vector2u> * path = m_flowField.getPathToGoal(mouseCell);
 
 		if (path)
 		{
+			m_pathFollower.setPath(path);
 			m_pathFollower.setVisible(true);
 			m_pathFollower.setPosition({ 
 				static_cast<float>(mouseCell.x) * m_CELL_SIZE.x, 
 				static_cast<float>(mouseCell.y) * m_CELL_SIZE.x });
 
 			m_flowFieldRenderer.cacheRender(path);
-			delete path;
+
+			//delete path; Clean up path somewhere.
 		}
 	}
 	else
@@ -117,7 +120,7 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 				m_flowField.setWall(mouseCell);
 		}
 
-		std::list<ff::Vector2u> const * path = nullptr;
+		std::list<ff::Vector2u> * path = nullptr;
 		if (m_pathFollower.isVisible())
 		{
 			sf::Vector2u pos = static_cast<sf::Vector2u>(m_pathFollower.getPosition());
@@ -129,9 +132,10 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 		}
 
 		m_pathFollower.setVisible(path != nullptr);
+		m_pathFollower.setPath(path);
 		m_flowFieldRenderer.cacheRender(path);
 
-		delete path;
+		//delete path; Clean up path somewhere.
 	}
 }
 

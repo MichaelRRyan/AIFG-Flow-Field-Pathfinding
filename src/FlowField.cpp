@@ -87,7 +87,7 @@ size_t FlowField::getHeight() const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::list<Vector2u> const* ff::FlowField::getPathToGoal(Vector2u const& t_startPos)
+std::list<Vector2u> * ff::FlowField::getPathToGoal(Vector2u const& t_startPos)
 {
 	// If the start is outside the bounds, impassable, undefined, or the goal, 
 	//		returns nullptr.

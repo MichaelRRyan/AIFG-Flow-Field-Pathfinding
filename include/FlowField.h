@@ -35,7 +35,7 @@ namespace ff
 		size_t getHeight() const;
 
 		// Flow Field functionality.
-		std::list<Vector2u> const* getPathToGoal(Vector2u const& t_startPos);
+		std::list<Vector2u> * getPathToGoal(Vector2u const& t_startPos);
 		void generate();
 
 	private:
