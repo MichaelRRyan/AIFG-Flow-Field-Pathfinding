@@ -72,7 +72,7 @@ void Game::processEvents()
 			}
 			else if (sf::Mouse::Button::Right == nextEvent.mouseButton.button)
 			{
-				if (m_flowField.getCell(mouseCell).cost == ff::WALL_COST)
+				if (m_flowField.getCell(mouseCell).cost == ff::IMPASSABLE_COST)
 					m_flowField.clearCell(mouseCell);
 				else
 					m_flowField.setWall(mouseCell);

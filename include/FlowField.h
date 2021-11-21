@@ -6,71 +6,50 @@
 #include <list>
 #include <iostream>
 
+#include "Cell.h"
+#include "Vector2u.h"
+
 namespace ff
 {
-	unsigned const WALL_COST{ std::numeric_limits<unsigned>::max() };
-	float const WALL_INTEGRATION_COST{ std::numeric_limits<float>::max() };
-
-	class Vector2u
-	{
-	public:
-
-		unsigned x;
-		unsigned y;
-
-		bool operator==(Vector2u const & t_right) const
-		{
-			return x == t_right.x && y == t_right.y;
-		}
-
-		bool operator!=(Vector2u const& t_right) const
-		{
-			return x != t_right.x || y != t_right.y;
-		}
-	};
-
-	struct Cell
-	{
-		unsigned cost;
-		float integrationCost;
-		Vector2u bestNeighbour;
-	};
-
 	class FlowField
 	{
 	public:
 
 		FlowField(size_t t_width, size_t t_height);
 
-		void setGoal(unsigned t_x, unsigned t_y, bool t_generate = true);
-		void setGoal(Vector2u const & t_cell, bool t_generate = true);
-
-		void setWall(unsigned t_x, unsigned t_y, bool t_generate = true);
+		// Setters.
+		void setGoal(Vector2u const& t_cell, bool t_generate = true);
 		void setWall(Vector2u const& t_cell, bool t_generate = true);
-
-		void clearCell(unsigned t_x, unsigned t_y, bool t_generate = true);
 		void clearCell(Vector2u const& t_cell, bool t_generate = true);
 
-		void generate();
+		void setGoal(unsigned t_x, unsigned t_y, bool t_generate = true);
+		void setWall(unsigned t_x, unsigned t_y, bool t_generate = true);
+		void clearCell(unsigned t_x, unsigned t_y, bool t_generate = true);
 
-		std::list<Vector2u> const * getPathToGoal(Vector2u const& t_startPos);
-
+		// Getters.
 		Cell const & getCell(unsigned t_x, unsigned t_y) const;
 		Cell const & getCell(Vector2u const& t_cell) const;
-
 		std::vector<std::vector<Cell>> const & getCells() const;
 
 		size_t getWidth() const;
 		size_t getHeight() const;
 
+		// Flow Field functionality.
+		std::list<Vector2u> const* getPathToGoal(Vector2u const& t_startPos);
+		void generate();
+
 	private:
 
-		void setNeighboursCosts(Vector2u t_cell, Vector2u t_goal);
+		void setNeighboursCosts(Vector2u t_cell, Vector2u t_goal, 
+								std::queue<Vector2u> & t_costSetupQueue);
+
 		void createFlowField();
-		Vector2u getBestNeighbour(Vector2u t_cell);
+		void setBestNeighbour(Vector2u const & t_cellPos);
+
+		bool isWithinBounds(unsigned t_x, unsigned t_y);
+		bool isWithinBounds(int t_x, int t_y);
 
 		std::vector<std::vector<Cell>> m_cells;
-		std::queue<Vector2u> m_costSetupQueue;
 
 		Vector2u m_goal;
 

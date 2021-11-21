@@ -61,7 +61,7 @@ void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
 		for (unsigned y = 0; y < cells.at(x).size(); ++y)
 		{
 			// Continues to the next cell if a wall.
-			if (cells.at(x).at(y).cost == WALL_COST) continue;
+			if (cells.at(x).at(y).cost == IMPASSABLE_COST) continue;
 
 			// Takes some cell info for ease of access.
 			unsigned cost = cells.at(x).at(y).cost;
