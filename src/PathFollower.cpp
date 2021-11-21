@@ -36,6 +36,9 @@ void PathFollower::update()
 
 			m_animatedSprite.setPosition(position);
 			m_previousPosition = position;
+
+			if (m_path->empty())
+				m_animatedSprite.setAnimation(static_cast<int>(Animation::Idle));
 		}
 		else
 		{

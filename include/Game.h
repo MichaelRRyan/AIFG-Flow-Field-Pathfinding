@@ -32,6 +32,8 @@ private:
 	void processMousePressedEvents(sf::Event const & t_event);
 	void processKeyPressedEvents(sf::Event const & t_event);
 
+	void setupStartMap();
+
 	sf::Vector2i const m_FLOW_FIELD_SIZE;
 	sf::Vector2f const m_CELL_SIZE;
 

@@ -46,13 +46,13 @@ void ff::SFMLFieldRenderer::cacheRender()
 			m_cellSprite.setPosition(static_cast<float>(x) * m_cellSize.x,
 									 static_cast<float>(y) * m_cellSize.y);
 
-			m_cellSprite.setTextureRect({ 48, 32 + ((rand() % 3) * 16), 16, 16 });
+			m_cellSprite.setTextureRect({ 48, 64 + ((rand() % 3) * 20), 20, 20 });
 			m_renderTexture.draw(m_cellSprite);
 
 			if (!cells.at(x).at(y).isPassable())
 			{
-				m_cellSprite.move(0.0f, -16.0f);
-				m_cellSprite.setTextureRect({ 48, 80, 16, 32 });
+				m_cellSprite.move(2.0f, -16.0f);
+				m_cellSprite.setTextureRect({ 48, 32, 16, 32 });
 
 				m_renderTexture.draw(m_cellSprite);
 			}

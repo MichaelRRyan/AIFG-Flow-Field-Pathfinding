@@ -13,12 +13,7 @@ Game::Game() :
 	m_pathFollower{ m_CELL_SIZE },
 	m_debugMode{ true }
 {
-	m_flowField.setGoal(10, 10);
-	m_flowField.generate();
-	
-	m_flowFieldRenderer.cacheRender();
-	m_fieldRenderer.cacheRender();
-	m_pathFollower.setVisible(false);
+	setupStartMap();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -173,6 +168,41 @@ void Game::processKeyPressedEvents(sf::Event const& t_event)
 	{
 		m_pathFollower.setFollowPath(!m_pathFollower.isFollowingPath());
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Game::setupStartMap()
+{
+	m_flowField.setGoal(25, 24);
+
+	m_flowField.setWall({ 22u, 22u }, false);
+	m_flowField.setWall({ 23u, 22u }, false);
+	m_flowField.setWall({ 24u, 22u }, false);
+	m_flowField.setWall({ 25u, 22u }, false);
+	m_flowField.setWall({ 26u, 22u }, false);
+	m_flowField.setWall({ 27u, 22u }, false);
+	m_flowField.setWall({ 28u, 22u }, false);
+	m_flowField.setWall({ 28u, 23u }, false);
+	m_flowField.setWall({ 28u, 24u }, false);
+	m_flowField.setWall({ 28u, 25u }, false);
+	m_flowField.setWall({ 28u, 26u }, false);
+	m_flowField.setWall({ 27u, 26u }, false);
+	m_flowField.setWall({ 25u, 26u }, false);
+	m_flowField.setWall({ 24u, 26u }, false);
+	m_flowField.setWall({ 23u, 26u }, false);
+	m_flowField.setWall({ 22u, 26u }, false);
+	m_flowField.setWall({ 22u, 25u }, false);
+	m_flowField.setWall({ 22u, 24u }, false);
+	m_flowField.setWall({ 22u, 23u }, false);
+
+	m_flowField.generate();
+
+	m_flowFieldRenderer.cacheRender();
+	m_fieldRenderer.cacheRender();
+
+	m_pathFollower.setVisible(true);
+	m_pathFollower.setPosition({ 25.0f * m_CELL_SIZE.x,
+								 24.0f * m_CELL_SIZE.x });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
