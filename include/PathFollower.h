@@ -33,20 +33,22 @@ private:
 
 	void draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const override;
 
+	void pickAnimation(sf::Vector2f const & t_vectorTo);
 	void setupAnimations();
 
 	enum class Animation
 	{
 		Idle = 0,
 		WalkDown = 1,
-		WalkSide = 2,
-		WalkUp = 3
+		WalkRight = 2,
+		WalkLeft = 3,
+		WalkUp = 4
 	};
 
 	std::list<ff::Vector2u> * m_path;
+	sf::Vector2f m_previousPosition;
 
 	AnimatedSprite m_animatedSprite;
-	sf::RectangleShape m_shape;
 	sf::Vector2f m_cellSize;
 	sf::Clock m_movementTimer;
 

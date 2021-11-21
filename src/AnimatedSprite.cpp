@@ -40,13 +40,19 @@ void AnimatedSprite::setAnimation(int t_index)
 {
 	if (t_index >= 0 && t_index < m_animations.size())
 	{
-		m_currentAnimation = &m_animations.at(t_index);
+		Animation * newAnim = &m_animations.at(t_index);
 
-		// If there's frames in the new current animation, use the first frame.
-		if (!m_currentAnimation->frames.empty())
+		// Sets the current animation if different from the new one.
+		if (m_currentAnimation == nullptr || m_currentAnimation != newAnim)
 		{
-			m_sprite.setTextureRect(m_currentAnimation->frames.at(0));
-			m_currentFrame = 0;
+			m_currentAnimation = newAnim;
+
+			// If there's frames in the new current animation, use the first frame.
+			if (!m_currentAnimation->frames.empty())
+			{
+				m_sprite.setTextureRect(m_currentAnimation->frames.at(0));
+				m_currentFrame = 0;
+			}
 		}
 	}
 }

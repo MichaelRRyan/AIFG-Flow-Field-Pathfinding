@@ -20,6 +20,18 @@
 
 int main()
 {
+	std::cout << "----------------------------------------------------------\n\n";
+	std::cout << "Sorry about the size, my laptop has a small screen :(\n\n";
+	std::cout << "----------------------------------------------------------\n";
+	std::cout << "Controls\n";
+	std::cout << "----------------------------------------------------------\n";
+	std::cout << "Use left mouse button to change the goal location.\n";
+	std::cout << "Use right mouse button to place or remove impassable cells.\n";
+	std::cout << "Use middle mouse button to place the path follower.\n";
+	std::cout << "Press 'F' to toggle the sheep's movement.\n";
+	std::cout << "Press '1' to toggle the costs.\n";
+	std::cout << "Press '2' to toggle the vectors.\n";
+
 	Game game;
 	game.run();
 

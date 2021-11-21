@@ -2,15 +2,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 PathFollower::PathFollower(sf::Vector2f const& t_cellSize) :
-	m_shape{ { t_cellSize } },
 	m_cellSize{ t_cellSize },
 	m_visible{ true },
 	m_followPath{ true },
 	m_path{ nullptr },
 	m_secondsPerMovement{ 0.5f }
 {
-	m_shape.setFillColor(sf::Color::Red);
-
 	m_animatedSprite.loadTexture("assets/images/tile_sheet.png");
 	m_animatedSprite.setOffset({ 2.0f, -16.0f });
 	setupAnimations();
@@ -23,17 +20,38 @@ void PathFollower::update()
 
 	if (m_path == nullptr || m_path->empty()) return;
 
-	if (m_followPath 
-		&& m_movementTimer.getElapsedTime().asSeconds() > m_secondsPerMovement)
+	if (m_followPath)
 	{
-		m_movementTimer.restart();
+		float secondsSinceLastMovement = m_movementTimer.getElapsedTime().asSeconds();
 		ff::Vector2u nextCell = m_path->front();
-		m_path->pop_front();
-		m_shape.setPosition(static_cast<float>(nextCell.x) * m_cellSize.x, 
-							static_cast<float>(nextCell.y) * m_cellSize.y);
 
-		m_animatedSprite.setPosition({ static_cast<float>(nextCell.x) * m_cellSize.x,
-									   static_cast<float>(nextCell.y) * m_cellSize.y });
+		// If the movement time has elapsed.
+		if (secondsSinceLastMovement >= m_secondsPerMovement)
+		{
+			m_movementTimer.restart();
+			m_path->pop_front();
+
+			sf::Vector2f position{ static_cast<float>(nextCell.x) * m_cellSize.x,
+								   static_cast<float>(nextCell.y) * m_cellSize.y };
+
+			m_animatedSprite.setPosition(position);
+			m_previousPosition = position;
+		}
+		else
+		{
+			// Interpolate across the cells.
+			float interp = secondsSinceLastMovement / m_secondsPerMovement;
+			
+			sf::Vector2f nextPosition{ static_cast<float>(nextCell.x) * m_cellSize.x,
+									   static_cast<float>(nextCell.y) * m_cellSize.y };
+
+			sf::Vector2f vectorTo = nextPosition - m_previousPosition;
+
+			m_animatedSprite.setPosition(m_previousPosition + vectorTo * interp);
+
+			// Works out which animation to use.
+			pickAnimation(vectorTo);
+		}
 	}
 }
 
@@ -52,14 +70,15 @@ std::list<ff::Vector2u>* PathFollower::getPath() const
 ///////////////////////////////////////////////////////////////////////////////
 void PathFollower::setPosition(sf::Vector2f const& t_position)
 {
-	m_shape.setPosition(t_position);
 	m_animatedSprite.setPosition(t_position);
+	m_previousPosition = t_position;
+	m_movementTimer.restart();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 sf::Vector2f const& PathFollower::getPosition() const
 {
-	return m_shape.getPosition();
+	return m_previousPosition;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,7 +109,11 @@ bool PathFollower::isVisible() const
 void PathFollower::setFollowPath(bool t_flag)
 {
 	m_followPath = t_flag;
-	m_movementTimer.restart();
+
+	if (t_flag)
+		m_movementTimer.restart();
+	else
+		m_animatedSprite.setAnimation(static_cast<int>(Animation::Idle));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,9 +126,25 @@ bool PathFollower::isFollowingPath() const
 void PathFollower::draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const
 {
 	if (m_visible)
-	{
-		t_target.draw(m_shape, t_states);
 		t_target.draw(m_animatedSprite, t_states);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void PathFollower::pickAnimation(sf::Vector2f const& t_vectorTo)
+{
+	if (t_vectorTo.y == 0.0f)
+	{
+		if (t_vectorTo.x < 0.0f)
+			m_animatedSprite.setAnimation(static_cast<int>(Animation::WalkLeft));
+		else
+			m_animatedSprite.setAnimation(static_cast<int>(Animation::WalkRight));
+	}
+	else
+	{
+		if (t_vectorTo.y < 0.0f)
+			m_animatedSprite.setAnimation(static_cast<int>(Animation::WalkUp));
+		else
+			m_animatedSprite.setAnimation(static_cast<int>(Animation::WalkDown));
 	}
 }
 
@@ -126,15 +165,21 @@ void PathFollower::setupAnimations()
 		0.2f
 	);
 
-	// Creates the walk side animation.
+	// Creates the walk right animation.
 	m_animatedSprite.createAnimation(
 		{ { 0, 64, 16, 32 }, { 16, 64, 16, 32 }, { 32, 64, 16, 32 } },
 		0.2f
 	);
 
-	// Creates the walk up animation.
+	// Creates the walk left animation.
 	m_animatedSprite.createAnimation(
 		{ { 0, 96, 16, 32 }, { 16, 96, 16, 32 }, { 32, 96, 16, 32 } },
+		0.2f
+	);
+
+	// Creates the walk up animation.
+	m_animatedSprite.createAnimation(
+		{ { 0, 128, 16, 32 }, { 16, 128, 16, 32 }, { 32, 128, 16, 32 } },
 		0.2f
 	);
 
