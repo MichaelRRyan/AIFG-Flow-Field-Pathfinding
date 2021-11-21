@@ -3,36 +3,27 @@
 using namespace ff;
 
 SFMLFlowFieldRenderer::SFMLFlowFieldRenderer(FlowField const * t_flowField, sf::Vector2f t_cellSize) :
-	m_flowField{ t_flowField },
 	m_cellSize{ t_cellSize },
 	m_renderCosts{ true },
 	m_renderVectors{ true }
 {
-	if (!m_costFont.loadFromFile("C:/Windows/Fonts/arial.ttf"))
-		throw("Error loading Arial font from \"C:/Windows/Fonts/arial.ttf\".");
+	setFlowField(t_flowField);
+
+	if (!m_costFont.loadFromFile("assets/fonts/arial.ttf"))
+		std::cout << "Error loading Arial font from \"assets/fonts/arial.ttf\".\n";
 	else
 		m_costText.setFont(m_costFont);
 
 	m_costText.setCharacterSize(12u);
-	
-	// If a valid flow field was passed.
-	if (m_flowField)
-	{
-		m_renderTexture.create(
-			m_flowField->getWidth() * static_cast<unsigned>(m_cellSize.x),
-			m_flowField->getHeight() * static_cast<unsigned>(m_cellSize.y));
-
-		m_renderTextureSprite.setTexture(m_renderTexture.getTexture());
-	}
 }
 
 void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 {
+	m_flowField = t_flowField;
+
 	// If a non-null flow field was passed.
 	if (t_flowField)
 	{
-		m_flowField = t_flowField;
-
 		m_renderTexture.create(
 			m_flowField->getWidth() * static_cast<unsigned>(m_cellSize.x),
 			m_flowField->getHeight() * static_cast<unsigned>(m_cellSize.y));

@@ -144,6 +144,7 @@
     <ClCompile Include="src\Cell.cpp" />
     <ClCompile Include="src\FlowField.cpp" />
     <ClCompile Include="src\PathFollower.cpp" />
+    <ClCompile Include="src\SFMLFieldRenderer.cpp" />
     <ClCompile Include="src\SFMLFlowFieldRenderer.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="include\Cell.h" />
     <ClInclude Include="include\FlowField.h" />
     <ClInclude Include="include\PathFollower.h" />
+    <ClInclude Include="include\SFMLFieldRenderer.h" />
     <ClInclude Include="include\SFMLFlowFieldRenderer.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\SFMLPathRenderer.h" />

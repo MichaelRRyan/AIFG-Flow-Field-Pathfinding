@@ -8,13 +8,16 @@ Game::Game() :
 	m_CELL_SIZE{ 20.0f, 20.0f },
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE },
+	m_fieldRenderer{ &m_flowField, m_CELL_SIZE },
 	m_pathRenderer{ m_CELL_SIZE },
-	m_pathFollower{ m_CELL_SIZE }
+	m_pathFollower{ m_CELL_SIZE },
+	m_debugMode{ true }
 {
 	m_flowField.setGoal(10, 10);
 	m_flowField.generate();
 	
 	m_flowFieldRenderer.cacheRender();
+	m_fieldRenderer.cacheRender();
 	m_pathFollower.setVisible(false);
 }
 
@@ -78,8 +81,14 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear();
-	m_window.draw(m_flowFieldRenderer);
-	m_window.draw(m_pathRenderer);
+	m_window.draw(m_fieldRenderer);
+
+	if (m_debugMode)
+	{
+		m_window.draw(m_flowFieldRenderer);
+		m_window.draw(m_pathRenderer);
+	}
+
 	m_window.draw(m_pathFollower);
 	m_window.display();
 }
@@ -139,6 +148,7 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 		m_pathRenderer.setPath(path);
 
 		m_flowFieldRenderer.cacheRender();
+		m_fieldRenderer.cacheRender();
 	}
 }
 
@@ -154,6 +164,10 @@ void Game::processKeyPressedEvents(sf::Event const& t_event)
 	{
 		m_flowFieldRenderer.setRenderVectors(!m_flowFieldRenderer.getRenderVectors());
 		m_flowFieldRenderer.cacheRender();
+	}
+	else if (sf::Keyboard::D == t_event.key.code)
+	{
+		m_debugMode = !m_debugMode;
 	}
 	else if (sf::Keyboard::F == t_event.key.code)
 	{

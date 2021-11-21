@@ -7,6 +7,7 @@
 #include "FlowField.h"
 #include "SFMLFlowFieldRenderer.h"
 #include "SFMLPathRenderer.h"
+#include "SFMLFieldRenderer.h"
 #include "PathFollower.h"
 
 /// <summary>
@@ -38,8 +39,11 @@ private:
 	ff::FlowField m_flowField;
 	ff::SFMLFlowFieldRenderer m_flowFieldRenderer;
 	ff::SFMLPathRenderer m_pathRenderer;
+	ff::SFMLFieldRenderer m_fieldRenderer;
 
 	PathFollower m_pathFollower;
+
+	bool m_debugMode;
 
 };
 

@@ -2,6 +2,7 @@
 #define SFML_FLOW_FIELD_RENDERER_H
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "FlowField.h"
 
 namespace ff

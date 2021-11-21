@@ -29,6 +29,7 @@ int main()
 	std::cout << "Use right mouse button to place or remove impassable cells.\n";
 	std::cout << "Use middle mouse button to place the path follower.\n";
 	std::cout << "Press 'F' to toggle the sheep's movement.\n";
+	std::cout << "Press 'D' to toggle the debug mode.\n";
 	std::cout << "Press '1' to toggle the costs.\n";
 	std::cout << "Press '2' to toggle the vectors.\n";
 

@@ -8,7 +8,7 @@ PathFollower::PathFollower(sf::Vector2f const& t_cellSize) :
 	m_path{ nullptr },
 	m_secondsPerMovement{ 0.5f }
 {
-	m_animatedSprite.loadTexture("assets/images/tile_sheet.png");
+	m_animatedSprite.loadTexture("assets/images/sprite_sheet.png");
 	m_animatedSprite.setOffset({ 2.0f, -16.0f });
 	setupAnimations();
 }
