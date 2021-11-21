@@ -3,7 +3,8 @@
 using namespace ff;
 
 ///////////////////////////////////////////////////////////////////////////////
-FlowField::FlowField(size_t t_width, size_t t_height)
+FlowField::FlowField(size_t t_width, size_t t_height) :
+	m_goal{ 0u, 0u }
 {
 	// Sets the width and height of the cell grid.
 	m_cells.resize(t_width);
@@ -92,7 +93,7 @@ std::list<Vector2u> const* ff::FlowField::getPathToGoal(Vector2u const& t_startP
 	if (!isWithinBounds(t_startPos.x, t_startPos.y)) return nullptr;
 
 	// If the start is impassable or the goal, returns nullptr.
-	if (!getCell(t_startPos).isPassable() && t_startPos == m_goal) return nullptr;
+	if (!getCell(t_startPos).isPassable() || t_startPos == m_goal) return nullptr;
 
 	// Creates a new empty path.
 	std::list<Vector2u>* path = new std::list<Vector2u>();
@@ -159,7 +160,7 @@ void FlowField::setNeighboursCosts(Vector2u t_cell, Vector2u t_goal,
 			// Work out integration cost.
 			float distX = static_cast<float>(t_goal.x) - x;
 			float distY = static_cast<float>(t_goal.y) - y;
-			float distance = sqrt(distX * distX + distY * distY);
+			float distance = abs(distX) + abs(distY);//sqrt(distX * distX + distY * distY);
 
 			m_cells.at(x).at(y).integrationCost = static_cast<float>(cost) * 100.0f + distance;
 
@@ -217,6 +218,6 @@ bool ff::FlowField::isWithinBounds(unsigned t_x, unsigned t_y)
 ///////////////////////////////////////////////////////////////////////////////
 bool ff::FlowField::isWithinBounds(int t_x, int t_y)
 {
-	return t_x >= 0 && t_x < m_cells.size() &&
-		   t_y >= 0 && t_y < m_cells.at(t_x).size();
+	return t_x >= 0 && t_x < static_cast<int>(m_cells.size()) &&
+		   t_y >= 0 && t_y < static_cast<int>(m_cells.at(t_x).size());
 }

@@ -19,6 +19,18 @@ namespace ff
 
 	private:
 
+		void drawCostText(sf::Vector2f const& t_position, unsigned t_cost);
+
+		void drawHeatmap(sf::RectangleShape & t_renderRect, 
+						 sf::Vector2f const& t_position, 
+						 unsigned t_cost);
+
+		void drawVectors(sf::Vector2f const & t_position, 
+						 Vector2u const & t_bestNeighbour, 
+						 sf::VertexArray& t_lines);
+
+		void drawPath(std::list<Vector2u> const & t_path);
+
 		void draw(sf::RenderTarget & t_target, sf::RenderStates t_states) const override;
 
 		FlowField const * m_flowField;
