@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AnimatedSprite.cpp" />
     <ClCompile Include="src\Cell.cpp" />
     <ClCompile Include="src\FlowField.cpp" />
     <ClCompile Include="src\PathFollower.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="src\Vector2u.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AnimatedSprite.h" />
     <ClInclude Include="include\Cell.h" />
     <ClInclude Include="include\FlowField.h" />
     <ClInclude Include="include\PathFollower.h" />

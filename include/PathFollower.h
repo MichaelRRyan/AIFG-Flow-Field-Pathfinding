@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <list>
 #include "Vector2u.h"
+#include "AnimatedSprite.h"
 
 class PathFollower : public sf::Drawable
 {
@@ -32,8 +33,19 @@ private:
 
 	void draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const override;
 
+	void setupAnimations();
+
+	enum class Animation
+	{
+		Idle = 0,
+		WalkDown = 1,
+		WalkSide = 2,
+		WalkUp = 3
+	};
+
 	std::list<ff::Vector2u> * m_path;
 
+	AnimatedSprite m_animatedSprite;
 	sf::RectangleShape m_shape;
 	sf::Vector2f m_cellSize;
 	sf::Clock m_movementTimer;
