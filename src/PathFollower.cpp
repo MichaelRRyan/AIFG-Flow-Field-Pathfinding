@@ -5,6 +5,7 @@ PathFollower::PathFollower(sf::Vector2f const& t_cellSize) :
 	m_shape{ { t_cellSize } },
 	m_cellSize{ t_cellSize },
 	m_visible{ true },
+	m_followPath{ true },
 	m_path{ nullptr },
 	m_secondsPerMovement{ 0.5f }
 {
@@ -16,7 +17,8 @@ void PathFollower::update()
 {
 	if (m_path == nullptr || m_path->empty()) return;
 
-	if (m_movementTimer.getElapsedTime().asSeconds() > m_secondsPerMovement)
+	if (m_followPath 
+		&& m_movementTimer.getElapsedTime().asSeconds() > m_secondsPerMovement)
 	{
 		m_movementTimer.restart();
 		ff::Vector2u nextCell = m_path->front();
@@ -66,6 +68,19 @@ void PathFollower::setVisible(bool t_flag)
 bool PathFollower::isVisible() const
 {
 	return m_visible;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void PathFollower::setFollowPath(bool t_flag)
+{
+	m_followPath = t_flag;
+	m_movementTimer.restart();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool PathFollower::isFollowingPath() const
+{
+	return m_followPath;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

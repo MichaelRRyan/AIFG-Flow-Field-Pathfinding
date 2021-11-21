@@ -12,7 +12,6 @@ namespace ff
 	public:
 
 		SFMLPathRenderer(sf::Vector2f const& t_cellSize);
-
 		void setPath(std::list<ff::Vector2u>* t_path);
 
 	private:

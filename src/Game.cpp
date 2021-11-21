@@ -156,6 +156,10 @@ void Game::processKeyPressedEvents(sf::Event const& t_event)
 		m_flowFieldRenderer.setRenderVectors(!m_flowFieldRenderer.getRenderVectors());
 		m_flowFieldRenderer.cacheRender();
 	}
+	else if (sf::Keyboard::F == t_event.key.code)
+	{
+		m_pathFollower.setFollowPath(!m_pathFollower.isFollowingPath());
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

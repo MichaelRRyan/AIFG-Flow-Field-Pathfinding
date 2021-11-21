@@ -24,6 +24,9 @@ public:
 	void setVisible(bool t_flag);
 	bool isVisible() const;
 
+	void setFollowPath(bool t_flag);
+	bool isFollowingPath() const;
+
 private:
 
 	void draw(sf::RenderTarget& t_target, sf::RenderStates t_states) const override;
@@ -36,6 +39,7 @@ private:
 
 	float m_secondsPerMovement;
 	bool m_visible;
+	bool m_followPath;
 
 };
 
