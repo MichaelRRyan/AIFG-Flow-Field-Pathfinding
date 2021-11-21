@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "FlowField.h"
 #include "SFMLFlowFieldRenderer.h"
+#include "PathFollower.h"
 
 /// <summary>
 /// The game's main class. Keeps the game running at 60
@@ -36,7 +37,7 @@ private:
 	ff::FlowField m_flowField;
 	ff::SFMLFlowFieldRenderer m_flowFieldRenderer;
 
-	ff::Vector2u * m_pathStart;
+	PathFollower m_pathFollower;
 
 };
 

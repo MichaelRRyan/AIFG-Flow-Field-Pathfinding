@@ -41,8 +41,7 @@ void SFMLFlowFieldRenderer::setFlowField(FlowField const * t_flowField)
 	}
 }
 
-void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path,
-										Vector2u const * t_pathStart)
+void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path)
 {
 	if (m_flowField == nullptr) return;
 
@@ -79,12 +78,6 @@ void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path,
 	if (t_path)
 	{
 		drawPath(*t_path);
-
-		// Draws the start of the path.
-		rectangle.setPosition({ static_cast<float>(t_pathStart->x) * m_cellSize.x,
-								static_cast<float>(t_pathStart->y) * m_cellSize.y });
-		rectangle.setFillColor(sf::Color::Red);
-		m_renderTexture.draw(rectangle);
 	}
 
 	m_renderTexture.draw(lines);

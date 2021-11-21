@@ -8,18 +8,18 @@ Game::Game() :
 	m_CELL_SIZE{ 20.0f, 20.0f },
 	m_flowField{ m_FLOW_FIELD_SIZE.x, m_FLOW_FIELD_SIZE.y },
 	m_flowFieldRenderer{ &m_flowField, m_CELL_SIZE },
-	m_pathStart{ nullptr }
+	m_pathFollower{ m_CELL_SIZE }
 {
 	m_flowField.setGoal(10, 10);
 	m_flowField.generate();
 	
 	m_flowFieldRenderer.cacheRender();
+	m_pathFollower.setVisible(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 Game::~Game()
 {
-	if (m_pathStart) delete m_pathStart;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,6 +77,7 @@ void Game::render()
 {
 	m_window.clear();
 	m_window.draw(m_flowFieldRenderer);
+	m_window.draw(m_pathFollower);
 	m_window.display();
 }
 
@@ -93,8 +94,12 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 
 		if (path)
 		{
-			m_pathStart = new ff::Vector2u{ mouseCell };
-			m_flowFieldRenderer.cacheRender(path, m_pathStart);
+			m_pathFollower.setVisible(true);
+			m_pathFollower.setPosition({ 
+				static_cast<float>(mouseCell.x) * m_CELL_SIZE.x, 
+				static_cast<float>(mouseCell.y) * m_CELL_SIZE.x });
+
+			m_flowFieldRenderer.cacheRender(path);
 			delete path;
 		}
 	}
@@ -113,10 +118,20 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 		}
 
 		std::list<ff::Vector2u> const * path = nullptr;
-		if (m_pathStart)
-			path = m_flowField.getPathToGoal(*m_pathStart);
+		if (m_pathFollower.isVisible())
+		{
+			sf::Vector2u pos = static_cast<sf::Vector2u>(m_pathFollower.getPosition());
+			ff::Vector2u pathStart{
+				pos.x / static_cast<unsigned>(m_CELL_SIZE.x),
+				pos.y / static_cast<unsigned>(m_CELL_SIZE.y) };
 
-		m_flowFieldRenderer.cacheRender(path, m_pathStart);
+			path = m_flowField.getPathToGoal(pathStart);
+		}
+
+		m_pathFollower.setVisible(path != nullptr);
+		m_flowFieldRenderer.cacheRender(path);
+
+		delete path;
 	}
 }
 

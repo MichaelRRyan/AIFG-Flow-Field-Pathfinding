@@ -15,8 +15,7 @@ namespace ff
 
 		void setFlowField(FlowField const * t_flowField);
 
-		void cacheRender(std::list<Vector2u> const * t_path = nullptr, 
-						 Vector2u const * t_pathStart = nullptr);
+		void cacheRender(std::list<Vector2u> const * t_path = nullptr);
 
 		void setRenderCosts(bool t_flag);
 		void setRenderVectors(bool t_flag);
