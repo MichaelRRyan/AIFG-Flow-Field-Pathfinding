@@ -70,17 +70,18 @@ void SFMLFlowFieldRenderer::cacheRender(std::list<Vector2u> const * t_path,
 			if (m_renderCosts)
 				drawCostText(position, cost);
 
-			if (m_renderVectors)
-				drawVectors(position, cells.at(x).at(y).bestNeighbour, lines);
+			if (cost != UNDEFINED_COST)
+				if (m_renderVectors)
+					drawVectors(position, cells.at(x).at(y).bestNeighbour, lines);
 		}
 	}
 
-	if (t_path) drawPath(*t_path);
-
-	// Draws the start of the path if not nullptr.
-	if (t_pathStart)
+	if (t_path)
 	{
-		rectangle.setPosition({ static_cast<float>(t_pathStart->x) * m_cellSize.x, 
+		drawPath(*t_path);
+
+		// Draws the start of the path.
+		rectangle.setPosition({ static_cast<float>(t_pathStart->x) * m_cellSize.x,
 								static_cast<float>(t_pathStart->y) * m_cellSize.y });
 		rectangle.setFillColor(sf::Color::Red);
 		m_renderTexture.draw(rectangle);
@@ -113,8 +114,12 @@ bool ff::SFMLFlowFieldRenderer::getRenderVectors() const
 void ff::SFMLFlowFieldRenderer::drawCostText(sf::Vector2f const& t_position,
 											 unsigned t_cost)
 {
+	if (t_cost == UNDEFINED_COST)
+		m_costText.setString("?");
+	else
+		m_costText.setString(std::to_string(t_cost));
+
 	m_costText.setPosition(t_position + m_cellSize / 2.0f);
-	m_costText.setString(std::to_string(t_cost));
 	sf::FloatRect rect = m_costText.getGlobalBounds();
 	m_costText.setOrigin(rect.width / 2.0f, rect.height / 2.0f);
 	m_renderTexture.draw(m_costText);
@@ -124,11 +129,18 @@ void ff::SFMLFlowFieldRenderer::drawHeatmap(sf::RectangleShape& t_renderRect,
 											sf::Vector2f const& t_position, 
 											unsigned t_cost)
 {
+	// Draws the goal.
 	if (t_cost == 0u)
 		t_renderRect.setFillColor(sf::Color::Green);
+
+	// Draws undefined tiles.
+	else if (t_cost == UNDEFINED_COST)
+		t_renderRect.setFillColor(sf::Color{ 20u, 20u, 20u });
+
+	// Finds the heatmap value of any other tile.
 	else
 	{
-		uint8_t value = std::max(50 - static_cast<int>(t_cost), 0) * 5u;
+		uint8_t value = std::max(50 - static_cast<int>(t_cost), 7) * 5u;
 		t_renderRect.setFillColor(sf::Color{ 0u, 0u, value });
 	}
 	

@@ -89,11 +89,15 @@ size_t FlowField::getHeight() const
 ///////////////////////////////////////////////////////////////////////////////
 std::list<Vector2u> const* ff::FlowField::getPathToGoal(Vector2u const& t_startPos)
 {
-	// Returns nullptr if the new wall position is outside the bounds of the cost field.
-	if (!isWithinBounds(t_startPos.x, t_startPos.y)) return nullptr;
-
-	// If the start is impassable or the goal, returns nullptr.
-	if (!getCell(t_startPos).isPassable() || t_startPos == m_goal) return nullptr;
+	// If the start is outside the bounds, impassable, undefined, or the goal, 
+	//		returns nullptr.
+	if (!isWithinBounds(t_startPos.x, t_startPos.y)
+		|| !getCell(t_startPos).isPassable() 
+		|| !getCell(t_startPos).isDefined()
+		|| t_startPos == m_goal)
+	{
+		return nullptr;
+	}
 
 	// Creates a new empty path.
 	std::list<Vector2u>* path = new std::list<Vector2u>();

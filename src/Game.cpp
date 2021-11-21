@@ -57,11 +57,11 @@ void Game::processEvents()
 	while (m_window.pollEvent(nextEvent))
 	{
 		if (sf::Event::Closed == nextEvent.type) // check if the close window button is clicked on.
-		{
 			m_window.close();
-		}
+
 		else if (sf::Event::MouseButtonPressed == nextEvent.type)
 			processMousePressedEvents(nextEvent);
+
 		else if (sf::Event::KeyPressed == nextEvent.type)
 			processKeyPressedEvents(nextEvent);
 	}
@@ -87,26 +87,36 @@ void Game::processMousePressedEvents(sf::Event const& t_event)
 		t_event.mouseButton.x / static_cast<int>(m_CELL_SIZE.x),
 		t_event.mouseButton.y / static_cast<int>(m_CELL_SIZE.y) };
 
-	if (sf::Mouse::Button::Left == t_event.mouseButton.button)
+	if (sf::Mouse::Button::Middle == t_event.mouseButton.button)
 	{
-		m_flowField.setGoal(mouseCell);
-		m_flowFieldRenderer.cacheRender();
-	}
-	else if (sf::Mouse::Button::Right == t_event.mouseButton.button)
-	{
-		if (m_flowField.getCell(mouseCell).cost == ff::IMPASSABLE_COST)
-			m_flowField.clearCell(mouseCell);
-		else
-			m_flowField.setWall(mouseCell);
+		std::list<ff::Vector2u> const* path = m_flowField.getPathToGoal(mouseCell);
 
-		m_flowFieldRenderer.cacheRender();
+		if (path)
+		{
+			m_pathStart = new ff::Vector2u{ mouseCell };
+			m_flowFieldRenderer.cacheRender(path, m_pathStart);
+			delete path;
+		}
 	}
-	else if (sf::Mouse::Button::Middle == t_event.mouseButton.button)
+	else
 	{
-		m_pathStart = new ff::Vector2u{ mouseCell };
-		std::list<ff::Vector2u> const * path = m_flowField.getPathToGoal(mouseCell);
+		if (sf::Mouse::Button::Left == t_event.mouseButton.button)
+		{
+			m_flowField.setGoal(mouseCell);
+		}
+		else if (sf::Mouse::Button::Right == t_event.mouseButton.button)
+		{
+			if (m_flowField.getCell(mouseCell).cost == ff::IMPASSABLE_COST)
+				m_flowField.clearCell(mouseCell);
+			else
+				m_flowField.setWall(mouseCell);
+		}
+
+		std::list<ff::Vector2u> const * path = nullptr;
+		if (m_pathStart)
+			path = m_flowField.getPathToGoal(*m_pathStart);
+
 		m_flowFieldRenderer.cacheRender(path, m_pathStart);
-		delete path;
 	}
 }
 
